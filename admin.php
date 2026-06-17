@@ -16,6 +16,10 @@ function save_json(string $file, array $data): void {
     file_put_contents($file, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 }
 
+function h(string $s): string {
+    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+}
+
 $adminPass = "111111";
 
 if (!isset($_SESSION['login'])) {
@@ -27,12 +31,11 @@ if (!isset($_SESSION['login'])) {
         }
         $error = "Hatalı şifre";
     }
-
     ?>
     <form method="POST" style="max-width:300px;margin:100px auto;">
         <h3>Admin Giriş</h3>
         <input type="password" name="password" placeholder="Şifre">
-        <button type="submit">Giriş</button>
+        <button>Giriş</button>
         <p style="color:red;"><?php echo $error ?? ''; ?></p>
     </form>
     <?php
@@ -47,6 +50,7 @@ $menu = load_json($menuFile, []);
 
 $action = $_GET['action'] ?? '';
 
+/* KATEGORİ EKLE */
 if ($action === 'add_category' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $categories[] = [
@@ -60,6 +64,7 @@ if ($action === 'add_category' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+/* ÜRÜN EKLE */
 if ($action === 'add_menu' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $menu[] = [
@@ -76,6 +81,23 @@ if ($action === 'add_menu' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+/* SİL */
+if ($action === 'delete_category') {
+    $id = $_GET['id'] ?? '';
+    $categories = array_values(array_filter($categories, fn($c) => ($c['id'] ?? '') !== $id));
+    save_json($categoriesFile, $categories);
+    header("Location: admin.php");
+    exit;
+}
+
+if ($action === 'delete_menu') {
+    $id = $_GET['id'] ?? '';
+    $menu = array_values(array_filter($menu, fn($m) => ($m['id'] ?? '') !== $id));
+    save_json($menuFile, $menu);
+    header("Location: admin.php");
+    exit;
+}
+
 ?>
 <!doctype html>
 <html lang="tr">
@@ -83,43 +105,69 @@ if ($action === 'add_menu' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Panel</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
 </head>
-<body style="font-family:Arial;padding:20px;">
+<body>
+
+<div class="container">
 
 <h2>Admin Panel</h2>
 
 <h3>Kategori Ekle</h3>
 <form method="POST" action="?action=add_category">
-    <input name="name" placeholder="Kategori adı">
+    <input name="name" placeholder="Kategori adı" required>
     <input name="image" placeholder="Resim URL">
-    <button>Kaydet</button>
+    <button>Ekle</button>
 </form>
 
 <h3>Ürün Ekle</h3>
 <form method="POST" action="?action=add_menu">
-    <select name="category_id">
+    <select name="category_id" required>
         <?php foreach ($categories as $c): ?>
-            <option value="<?php echo $c['id']; ?>">
-                <?php echo $c['name']; ?>
+            <option value="<?php echo h($c['id']); ?>">
+                <?php echo h($c['name']); ?>
             </option>
         <?php endforeach; ?>
     </select>
 
-    <input name="name" placeholder="Ürün adı">
+    <input name="name" placeholder="Ürün adı" required>
     <input name="desc" placeholder="Açıklama">
     <input name="price" placeholder="Fiyat">
     <input name="image" placeholder="Resim URL">
 
-    <button>Kaydet</button>
+    <button>Ekle</button>
 </form>
 
 <hr>
 
 <h3>Kategoriler</h3>
-<pre><?php print_r($categories); ?></pre>
+<table>
+<tr><th>Ad</th><th>İşlem</th></tr>
+<?php foreach ($categories as $c): ?>
+<tr>
+<td><?php echo h($c['name']); ?></td>
+<td>
+    <a href="?action=delete_category&id=<?php echo h($c['id']); ?>">Sil</a>
+</td>
+</tr>
+<?php endforeach; ?>
+</table>
 
 <h3>Ürünler</h3>
-<pre><?php print_r($menu); ?></pre>
+<table>
+<tr><th>Ad</th><th>Fiyat</th><th>İşlem</th></tr>
+<?php foreach ($menu as $m): ?>
+<tr>
+<td><?php echo h($m['name']); ?></td>
+<td><?php echo h($m['price']); ?> ₺</td>
+<td>
+    <a href="?action=delete_menu&id=<?php echo h($m['id']); ?>">Sil</a>
+</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+</div>
 
 </body>
 </html>

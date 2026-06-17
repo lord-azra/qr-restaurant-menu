@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "category_id": "kebap",
+    "name": "Adana Kebap",
+    "desc": "Acılı, klasik Adana kebap",
+    "price": "220",
+    "image": ""
+  },
+  {
+    "id": "2",
+    "category_id": "kebap",
+    "name": "Urfa Kebap",
+    "desc": "Acısız, yumuşak lezzet",
+    "price": "220",
+    "image": ""
+  },
+  {
+    "id": "3",
+    "category_id": "icecek",
+    "name": "Ayran",
+    "desc": "Soğuk yoğurt içeceği",
+    "price": "40",
+    "image": ""
+  },
+  {
+    "id": "4",
+    "category_id": "tatli",
+    "name": "Künefe",
+    "desc": "Sıcak, tel kadayıf tatlısı",
+    "price": "120",
+    "image": ""
+  }
+]

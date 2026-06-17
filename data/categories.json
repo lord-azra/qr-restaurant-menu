@@ -1,0 +1,17 @@
+[
+  {
+    "id": "kebap",
+    "name": "Kebaplar",
+    "image": ""
+  },
+  {
+    "id": "icecek",
+    "name": "İçecekler",
+    "image": ""
+  },
+  {
+    "id": "tatli",
+    "name": "Tatlılar",
+    "image": ""
+  }
+]
